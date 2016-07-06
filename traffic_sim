@@ -1,0 +1,264 @@
+"""
+New change: 
+- make the whole procedure a function 
+- add "slowtime" rule
+- opt out "slow down N cars behind" rule (right now N=0)
+- opt out "wait 5 seconds to enter" rule 
+- create a separate func which only computes time without doing animation for purpose of data analysis 
+ 
+Maybe consider: 
+- apply "safe distance between cars" (right now its 0)
+ 
+ 
+Wonder: 
+- It seems cars would always enter once every 5s, if apply "wait 5 seconds to enter" rule
+    Guess: Say, now car A at marker 0 slows down. After 5s, car B enters with speed 1.0. But at this time, 
+            if car A is not at least 1 mile ahead of car B, the slow speed would be passed on to car B. So 
+            then, car B at marker 0 slows down. Car C waits 5s to enter. The process repeats.
+            In short, 5s is not enough for the last second car to get very far ahead.
+    Ways to fix: increase waittime, OR
+                 set an extra rule, such that cars can only enter when the front car is ? miles away 
+ 
+"""
+ 
+ 
+ 
+import numpy as np
+import random
+import matplotlib.pyplot as plt
+ 
+ 
+# setting up the animation
+ 
+ 
+# define Car object
+class Car:
+    def __init__(self, Xposition = 0.0, Yposition = 0.0, Velocity = 1.0, \
+                    end = False, slowtime = 0.0, previousVelocity = 0.0):
+        self.x = Xposition 
+        self.y = Yposition
+        self.v = Velocity
+        self.end = end
+        self.slowtime = slowtime # time passed since a car decelerates 
+        self.pv = previousVelocity
+ 
+    def move(self):
+        self.x = self.x + self.v
+ 
+# traffic simulation func
+def traffic(Ntotal = 1000, T = 3, P = 0.9, D = 1, fv = 0.3, ST = 5, L = 100, N = 0, SafeD = 0.5, WT = 5):
+    # Ntotal: total number of cars 
+    # T: deer jumps out every T seconds
+    # P: probability of a deer jumping out at one of the mile markers
+    # D: the maximum distance between deer and car such that the car is able to see the deer
+    # fv: velocity drop
+    # ST: maximum slowtime of a car driving at a constant speed < 1.0 mile/s
+    # L: length of highway (mile)
+    # N: N cars behind the car which sees the deer get slowed down at the same time
+    # SafeD: distance between cars must be > SafeD
+    # WT: if car at marker 0 slows down, next car must wait WT seconds to enter
+    plt.axis([0,100,-2,2])
+    plt.ion()
+    plt.show()
+   
+ 
+    # set initial state: 
+    #   at time = 0 s, one car with speed = 1.0 mile/s enters highway 
+    time = 0
+    cars = [Car()]
+    waittime = 0
+ 
+    # until all Ntotal cars leave the highway, execute the while loop...
+    while any(car.end == False for car in cars):
+ 
+        # generate deer 
+        deer = random.randint(0,L)
+        prob = random.random()
+ 
+        # if a deer jumps out, find the car closest to the deer among those cars driving towards it
+        # then check if the car sees the deer, if so, slow it down 
+        # (optionally) slow down N cars behind this car 
+        if (time%T == 0) and (prob < P):             
+            all_cars_going_towards_deer = [car.x for car in cars if car.x <= deer]
+             
+            if len(all_cars_going_towards_deer) != 0:
+                closest_car = max(all_cars_going_towards_deer)
+ 
+                if deer - closest_car <= D:
+                    ind = [car.x for car in cars].index(closest_car)
+                    for k in range(ind, ind+N+1):
+                        try:
+                            cars[k].v *= fv
+                        except IndexError:
+                            pass
+ 
+        # creating slowtime to wait ST seconds if slowed down
+        #   for each car,
+        #   slowtime is 0 if the current speed is 1.0
+        #   if the car decelerates, (recognized by comparing current speed with previous speed) slowtime begins to count 
+        #   if the car continues uniformly in the slow speed, slowtime increases by 1 for every passed simulation second
+        #   if more than ST seconds have passed since the last deceleration, the car speeds up to 1.0 mile/s
+         
+        for car in cars:
+            if car.v < car.pv: # reset slowtime if decelerates 
+                car.slowtime = 1
+            elif car.v == car.pv and car.v < 1.0:
+                car.slowtime += 1
+            else:  
+                car.slowtime = 0
+     
+            if car.slowtime > ST:
+                car.v = 1.0
+ 
+             
+        # make sure that no car will crash into the car in front after next move
+        # if any car will crash into the front car, slow down its velocity so that 
+        #   it has the same velocity as the front car does
+        # make an assertion to check if a crash happened
+        for i in range(len(cars)-1):
+            if cars[i+1].x + cars[i+1].v + SafeD >= cars[i].x + cars[i].v:
+                cars[i+1].v = cars[i].v
+            assert cars[i].x > cars[i+1].x + SafeD, "Crash!"
+         
+        # (optional)
+        # check if there's a car slowed down at marker 0
+        # if there is, the next car needs to wait for 5 seconds to enter
+        if (cars[-1].x == 0) and (cars[-1].v < 1):
+            waittime = WT
+         
+ 
+        # move cars, flip the end value if any car exits highway 
+        for car in cars:
+            car.move()
+            if car.x > L:
+                car.end = True
+ 
+ 
+        # append a new car
+        if (len(cars) < Ntotal) and (waittime == 0) and (cars[-1].x > 1):
+            cars.append(Car())
+         
+ 
+        time += 1
+         
+        if waittime > 0: 
+            waittime -= 1
+        else: 
+            pass
+         
+        # recording previous velocity for the usage of slowtime
+        for i in range(len(cars)):
+            cars[i].pv = cars[i].v
+         
+        # plot
+        Xpositions = np.array([car.x for car in cars])
+        Ypositions = np.array([car.y for car in cars])
+        plt.clf()
+        plt.text(5, -0.8, 'Time = '+str(time))
+        plt.scatter(Xpositions,Ypositions, s=15, c='r', marker='.')
+        if (time%T == 0) and (prob < P):
+            plt.plot([deer, deer], [-0.1,0.1], 'b-', linewidth= 1)   # plot deer
+        plt.xlim(-1,L)
+        plt.ylim(-1,1)
+        plt.draw()
+        plt.pause(0.1)
+ 
+ 
+    print time
+ 
+#traffic()
+ 
+ 
+def traffic_compute_time(Ntotal = 1000, T = 3, P = 0.9, D = 1, fv = 0.3, ST = 5, L = 100, N = 0, SafeD = 0.5, WT = 5):
+ 
+    time = 0
+    cars = [Car()]
+    waittime = 0
+ 
+    # until all Ntotal cars leave the highway, execute the while loop...
+    while any(car.end == False for car in cars):
+ 
+        # generate deer 
+        deer = random.randint(0,L)
+        prob = random.random()
+ 
+        # if a deer jumps out, find the car closest to the deer among those cars driving towards it
+        # then check if the car sees the deer, if so, slow it down 
+        # (optionally) slow down N cars behind this car 
+        if (time%T == 0) and (prob < P):             
+            all_cars_going_towards_deer = [car.x for car in cars if car.x <= deer]
+             
+            if len(all_cars_going_towards_deer) != 0:
+                closest_car = max(all_cars_going_towards_deer)
+ 
+                if deer - closest_car <= D:
+                    ind = [car.x for car in cars].index(closest_car)
+                    for k in range(ind, ind+N+1):
+                        try:
+                            cars[k].v *= fv
+                        except IndexError:
+                            pass
+ 
+        # creating slowtime to wait ST seconds if slowed down
+        #   for each car,
+        #   slowtime is 0 if the current speed is 1.0
+        #   if the car decelerates, (recognized by comparing current speed with previous speed) slowtime begins to count 
+        #   if the car continues uniformly in the slow speed, slowtime increases by 1 for every passed simulation second
+        #   if more than ST seconds have passed since the last deceleration, the car speeds up to 1.0 mile/s
+        for car in cars:
+            if car.v < car.pv: # reset slowtime if decelerates 
+                car.slowtime = 1
+            elif car.v == car.pv and car.v < 1.0:
+                car.slowtime += 1
+            else:  
+                car.slowtime = 0
+     
+            if car.slowtime > ST:
+                car.v = 1.0
+ 
+             
+        # make sure that no car will crash into the car in front after next move
+        # if any car will crash into the front car, slow down its velocity so that 
+        #   it has the same velocity as the front car does
+        # make an assertion to check if a crash happened
+        for i in range(len(cars)-1):
+            if cars[i+1].x + cars[i+1].v + SafeD >= cars[i].x + cars[i].v:
+                cars[i+1].v = cars[i].v
+            assert cars[i].x > cars[i+1].x, "Crash!"
+         
+        # (optional)
+        # check if there's a car slowed down at marker 0
+        # if there is, the next car needs to wait for 5 seconds to enter
+        if (cars[-1].x == 0) and (cars[-1].v < 1):
+            waittime = WT
+         
+ 
+        # move cars, flip the end value if any car exits highway 
+        for car in cars:
+            car.move()
+            if car.x > L:
+                car.end = True
+ 
+ 
+        # append a new car
+        if (len(cars) < Ntotal) and (waittime == 0) and (cars[-1].x > 1):
+            cars.append(Car())
+         
+ 
+        time += 1
+         
+        if waittime > 0: 
+            waittime -= 1
+        else: 
+            pass
+         
+        # recording previous velocity for the usage of slowtime
+        for i in range(len(cars)):
+            cars[i].pv = cars[i].v
+         
+ 
+    return time
+ 
+ 
+traffic(T=1)
+    
