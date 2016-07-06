@@ -1,0 +1,95 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{lipsum}
+\usepackage{inputenc}
+
+\title{Homework for Chapter 5.1-5.4}
+\author{Anthony Rizzo}
+\begin{document}
+\maketitle
+
+
+\section*{Chapter 5.1}
+
+\subsection*{Problem 11}
+
+At first glance, we can see that the sequence oscillates between positive and negative values. Thus, we know that there will be a multiplicative factor of $-1^n$ included in the formula. But, the first term is $0$ and the second term is negative so we know that the factor will be $-1^{n-1}$. Then, by further analysis,
+we see that the formula also follows the pattern of $\frac{n-1}{n}$. Therefore, the final formula is of the form $a_n = (-1^{n-1}) \frac{n-1}{n}$.
+
+\subsection*{Problem 39}
+
+Given the finite series $(1^3-1)-(2^3-1)+(3^3-1)-(4^3-1)+(5^3-1)$, we can see that the series alternates between even and odd values. Therefore, we can factor out a $-1$ from each negative term to get $(1^3-1)+(-1)(2^3-1)+(3^3-1)+(-1)(4^3-1)+(5^3-1)$. Then, we can see that in front of the positive terms, the coefficient can be written as ascending even powers of $-1$ and in front of the negative terms the coefficient can be written as ascending odd powers of $-1$, such that $(-1^{2}) (1^3-1)+(-1^{3})(2^3-1)+(-1^{4})(3^3-1)+(-1^{5})(4^3-1)+(-1^{6})(5^3-1)$. It then follows that this can be written as $(-1^{1+1}) (1^3-1)+(-1^{2+1})(2^3-1)+(-1^{3+1})(3^3-1)+(-1^{4+1})(4^3-1)+(-1^{5+1})(5^3-1)$. Finally, this suggests that the summation notation is $\sum\limits_{i=1}^5 (-1)^{i+1}(i^{3}-1)$.
+
+\subsection*{Problem 43}
+
+We are given the series $(1-t)\cdot(1-t^2)\cdot(1-t^3)\cdot(1-t^4)$. Since we are multiplying terms, we know that we're dealing with product notation. It is easy to see that in general, we can express the $i^{th}$ term as $1-t^i$. Therefore, we can write this in product notation as $\prod\limits_{i=1}^4 1-t^i$.
+
+\subsection*{Problem 47}
+
+We are given the series $n + \frac{n-1}{2!} + \frac{n-2}{3!} + \frac{n-3}{4!} + ... + \frac{1}{n!}$. Then, we can write the first and last terms more suggestively in order to fit the pattern; that is, $\frac{n-0}{1} + \frac{n-1}{2!} + \frac{n-2}{3!} + \frac{n-3}{4!} + ... + \frac{n-(n-1)}{n!}$. From this, we can then see that we can let $i = n -1$ and then write this in summation notation as $\sum\limits_{i=0}^{n-1} \frac{n-i}{(i+1)!}$.
+
+\subsection*{Problem 74}
+
+PROOF: We need to show that for any prime $p$ and any positive integer $r$ such that $0<r<p$, and $p \mid \binom{p}{r}$. By the definition of $p$ choose $r$, we can write $\binom{p}{r} = \frac{p!}{r!(p-r)!}$. Then, we can rewrite this by expanding out the top factorial as $\binom{p}{r} = \frac{p(p-1)(p-2)...(p-r)!}{r!(p-r)!}$. Then, we can see that the $(p-r)!$ terms cancel out, leaving us with $\binom{p}{r} = \frac{p(p-1)(p-2)...(p-r+1)}{r!}$. But, by basic combinatorics, we know that $\binom{p}{r}$ must be an integer. However, none of the members of $r!$ in the denominator can divide $p$ since $p$ is prime and by definition $0<r<p$. Then, it is easy to see that $p$ is a factor of $\binom{p}{r}$ since it is in the numerator of $\binom{p}{r} = \frac{p(p-1)(p-2)...(p-r+1)}{r!}$, where no terms in the denominator divide it and the entire expression is an integer. Therefore, it must be the case that $p \mid \binom{p}{r}$ since it is an integer that is a multiple of $p$. Q.E.D.
+
+
+\section*{Chapter 5.2}
+
+\subsection*{Problem 2}
+
+PROOF: Let the property $P(n)$ be the sentence: $n$ cents of postage can be obtained using 3 cent and 7 cent stamps. First, we must show that $P(12)$ is true for the base case. It is clear that $4$ 3 cent stamps can be used to obtain 12 cents in postage. Therefore, the base case is true. Then, suppose that k is any integer with $k \geq 12$ such that $k$ cents can be obtained using 3 cent and 7 cent stamps. This is $P(k)$, our inductive hypothesis. Now, we must show that $P(k+1)$ is true; that is, $(k+1)$ cents can be obtained using 3 cent and 7 cent stamps. Consider two cases: one in which a 3 cent stamp is used, and one in which a 3 cent stamp is not used. In the first case, since $k \geq 12$, there must be at least two of either stamp. If there are two 3 cent stamps, take these both away and replace them with one 7 cent stamp; the result will be $(k+1)$ cents. If there are two 7 cent stamps, then take away both of these and replace them with 5 3 cent stamps; the result will be $(k+1)$ cents. Then, for the case in which a 3 cent stamp is not used, since $k \geq 12$, there must be at least two 7 cent stamps. Take these both away and replace them with 5 3 cent stamps; the result will be $(k+1)$ cents. Thus, in any of these cases, $(k+1)$ cents can be obtained using 3 cent and 5 cent coins. Q.E.D.
+
+\subsection*{Problem 11}
+
+PROOF: We are given the statement $1^3 + 2^3 + ... + n^3 = \lbrack \frac{n(n+1)}{2} \rbrack ^2$ for all integers $n \geq 1$. First, we must prove the base case of $n=1$: $1^3 =\lbrack \frac{1(1+1)}{2} \rbrack ^2 = 1$. Therefore, the basis step is true. Next, suppose that for all integers $k \geq 1$, $1^3 + 2^3 + ... + k^3 = \lbrack \frac{k(k+1)}{2} \rbrack ^2$ is true. This is our inductive hypothesis. Now, we must show that $1^3 + 2^3 + ... + (k+1)^3 = \lbrack \frac{(k+1)((k+1)+1)}{2} \rbrack ^2$ is true. We can see that the right side of the equation simplifies to $\lbrack \frac{(k+1)(k+2)}{2} \rbrack ^2$. Then, we can use our inductive hypothesis to set  $1^3 + 2^3 + ... + k^3 = \lbrack \frac{k(k+1)}{2} \rbrack ^2$ on the left side of the equation, so the entire left side becomes $\lbrack \frac{k(k+1)}{2} \rbrack ^2 + (k+1)^3$. We can then square out the $\lbrack \frac{k(k+1)}{2} \rbrack ^2$ term to get $\frac{k^{2}(k+1)^{2}}{4}$ and then give the $(k+1)^3$ a common denominator of 4 so we can combine the terms to get: $\frac{k^{2}(k+1)^{2} + 4(k+1)^3}{4}$. Then, we can factor out a $k+1$ from $4(k+1)^3$ to get $\frac{k^{2}(k+1)^{2} + 4(k+1)(k+1)^2}{4}$. Next, we can factor a $(k+1)^2$ term out of the numerator to get $\frac{(k+1)^{2}(k^2+ 4k+4))}{4}$. Finally, we can see that we can factor the $k^2+4k+4$ term to get $\frac{(k+1)^{2}(k+2)^{2}}{2^2}$ which is equivalent to $\lbrack \frac{(k+1)(k+2)}{2} \rbrack ^2$. As we can see, this is equal to the right side of the equation so $\lbrack \frac{(k+1)(k+2)}{2} \rbrack ^2 = \lbrack \frac{(k+1)(k+2)}{2} \rbrack ^2$. Therefore, this statement must be true through mathematical induction. Q.E.D.
+
+\subsection*{Problem 29}
+
+We are given the series $1-2+2^2-2^3+...+(-1)^{n}(2^n)$, where $n \in \mathbb{Z}^+$. Then, we know that the sum of a geometric series is given by $\sum\limits_{i=0}^{n} r^{i} = \frac{r^{n+1}-1}{r-1}$ for any $r \in \mathbb{R}$, $r \neq 1$ and $n \in \mathbb{Z}$, $n \geq 0$. Then, by inspection, we can see that $r=-2$ in this case because for a geometric sequence $r$ is the ratio between adjacent terms. Therefore, we can plug this value of $r$ into the sum of a geometric sequence equation to get $\sum\limits_{i=0}^{n} -2^{i} = \frac{-2^{n+1}-1}{-2-1}$. Simplifying, we get $\sum\limits_{i=0}^{n} -2^{i} = \frac{1-(-2)^{n+1}}{3}$.
+
+\subsection*{Problem 31}
+
+We are given the series $ar^m+ar^{m+1}+ar^{m+2}+...+ar^{m+n}$, where $m,n \in \mathbb{Z}$, $n \geq 0$, and $a,r \in \mathbb{R}$. First, we can see that we can factor out an $a$ from every term. This gives $ar^m+ar^{m+1}+ar^{m+2}+...+ar^{m+n} = a(r^m + r^{m+1} + r^{m+2} +...+r^{m+n})$. Then, we can rewrite the terms inside the parenthesis as  $a(r^m + r^{m}r^{1} + r^{m}r^{2} +...+r^{m}r^{n})$ by properties of exponents. Now, we can factor out an $r^m$ term to give $ar^{m}(1+r+r^{2}+...+r^{n})$. Finally, we can see that the sum inside the parenthesis is just a geometric series with a constant ratio of $r$. Therefore, we can use the definition of the sum of a geometric sequence to explicitly write a general formula for the sum: $ar^{m}(\frac{r^{n+1}-1}{r-1})$.
+
+\section*{Chapter 5.3}
+
+\subsection*{Problem 13}
+
+PROOF: We are given the statement, $x-y \mid x^n - y^n$ where $x,y \in \mathbb{Z}$, $x \neq y$, and $n \in \mathbb{Z}$, $n \geq 0$. We'll call this statement $P(n)$. First, we must prove the base case, $n=0$. For $n=0$, we have $x^0 - y^0 = 1-1 = 0$, which is divisible by $x-y$. Then, suppose that $P(k)$ is true for $\forall k \in \mathbb{Z}$, $k \geq 0$. This means our inductive hypothesis is $x-y \mid x^k - y^k$ where $x,y \in \mathbb{Z}$, $x \neq y$, and $\forall k \in \mathbb{Z}$, $k \geq 0$. Next, we must show that $P(k+1)$ is true. To show that this is true, we must show that $x-y \mid x^{k+1} - y^{k+1}$. By the laws of algebra, we can rewrite this as $x^{k+1} - y^{k+1} = x^{k+1} - xy^{k}+xy^{k} - y^{k+1}$. Then, by the laws of exponents, we can rewrite this again as $x^{k}x - xy^{k}+xy^{k} - y^{k}y$. Finally, we can factor this expression to get $ x(x^{k}-y^{k}) + y^{k}(x-y)$. Then, by the inductive hypothesis, we know that $x-y \mid x^k - y^k$, so $x-y$ divides the first term and also $x-y$ divides itself so it also divides the second term. Therefore, the original statement, $x-y \mid x^n - y^n$, must be true by mathematical induction. Q.E.D.
+
+\subsection*{Problem 14}
+
+PROOF: We are given the statement, $6 \mid n^{3}-n$, $\forall n \in \mathbb{Z}$, $n \geq 0$. We'll call this statement $P(n)$. First, we must prove the base case, $P(0)$. For $n=0$, we have $6 \mid 0^{3}-0$. This is true, because $6 \mid 0$. Therefore, $P(0)$ is true. Next, suppose that for $\forall k \in \mathbb{Z}$, $k \geq 0$, $6 \mid k^{3}-k$. This is our inductive hypothesis, $P(k)$. Now, we need to show that $P(k+1)$ is true; that is, $6 \mid (k+1)^{3}-(k+1)$. Expanding this out, we get $k^{3} + k^{2} +2k^{2}+2k+k+1-k-1$. Then, we can collect the terms more suggestively to get $(k^{3}-k) + 3k^{2} + 3k$, which we can again factor to get $(k^{3}-k) + 3k(k + 1)$. Now, by the inductive hypothesis, we know that the term $(k^{3}-k)$ is divisible by 6. We can also deduce that the term $3k(k + 1)$ is divisible by 6 since $k(k+1)$ is the product of two consecutive integers, so we know that one of these integers must be even by definition; we also know that any even integer greater than or equal to 2 has 2 as one of its factors. Thus, we can always factor out this 2 so that the new factor in front of the term $3k(k + 1)$ is 6 rather than 3. Then, we can see that this term will also always be divisible by 6. Therefore, the original statement, $6 \mid n^{3}-n$, $\forall n \in \mathbb{Z}$, $n \geq 0$ must be true by mathematical induction. Q.E.D.
+
+\subsection*{Problem 17}
+
+PROOF: We are given the statement, $1 + 3n \leq 4^n$ for $\forall n \in \mathbb{Z}$, $n \geq 0$. We'll call this statement $P(n)$. First, we must prove the base case, $P(0)$. For $n=0$, we have $1 + 3(0) \leq 4^{0}$. This evaluates to $1 \leq 1$, which is clearly true. Next, suppose that for $\forall k \in \mathbb{Z}$, $k \geq 0$, $P(k)$ is true; that is, $1 + 3k \leq 4^k$. We then need to show that $P(k+1)$ is true; that is, $1 + 3(k+1) \leq 4^{k+1}$. Multiplying out the left side, we get $1 + 3k+3 \leq 4^{k+1}$ which we can then rewrite as $3k + 4 \leq 4^{k+1}$. We can again rewrite the left side as $(3k + 1) + 3$ and then rewrite the right side as $4^{k} + 4^{k}$ by the properties of exponents. Now, we have $(3k + 1) + 3 \leq 4^{k} + 4^{k}$. But, we know that $(3k + 1) \leq 4^{k}$ by the inductive hypothesis and also $3 \leq 4^{k}$ for $\forall k \in \mathbb{Z}$, $k \geq 0$. Therefore, $3k + 4 \leq 2\cdot 4^{k} = 4^{k+1}$. This is what we needed to show. Therefore, the original statement, $1 + 3n \leq 4^n$ for $\forall n \in \mathbb{Z}$, $n \geq 0$, must be true by mathematical induction. Q.E.D.
+
+\subsection*{Problem 37}
+
+PROOF: Suppose that the sum of 3 consecutive integers is always less than 45. Then, we know that the total value of all of the integers is given by $\sum\limits_{i=1}^{30} x_{i} = \sum\limits_{i=1}^{30} i = \frac{n(n+1)}{2} = \frac{30(30+1)}{2} = 465$. Next, we know that there are 30 possible pairs of 3 consecutive integers, accounting for all possible combinations. Then, the sum of the values of each group must be less than 45 since we supposed that the sum of 3 consecutive integers is always less than 45. Therefore, if we sum all of the groups, their total must be less than 1350 since each group of 3 must sum to be less than 45 and we have 30 such groups. However, we already found that $\sum\limits_{i=1}^{30} x_{i} = \sum\limits_{i=1}^{30} i = \frac{n(n+1)}{2} = \frac{30(30+1)}{2} = 465$, the total value for 30 integers; but, we must multiply this by 3 to get the total for all 30 groups, giving 1395. Thus, we have reached a contradiction since their sum is $1395 > 1350$. Therefore, no matter what the order is, there must be three successive integers whose sum is at least 45. Q.E.D.
+
+\section*{Chapter 5.4}
+
+\subsection*{Problem 7}
+
+PROOF: We are given the definition of the sequence as $g_{1}=3$, $g_{2}=5$, and $g_{k} = 3g_{k-1} - 2g_{k-2}$ for $\forall k \in \mathbb{Z}$, $k \geq 3$. We need to prove that the formula for the $n^{th}$ term of the sequence is $g_{n} = 2^{n} +1$ for $\forall n \in \mathbb{Z}$, $n \geq 1$. We'll refer to $g_{n} = 2^{n} +1$ as $P(n)$. First, we must show that the base cases $P(1)$ and $P(2)$ are true. First, for $n=1$, $g_{1} = 2^{1} +1 = 3$, so $P(1)$ is true. Then, for $n=2$, $g_{2} = 2^{2} +1=5$, so $P(2)$ is also true. Now, suppose that for $\forall k \in \mathbb{Z}$, $k \geq 2$, $g_{i} = 2^{i} +1$ for $\forall i \in \mathbb{Z}$ such that $1 \leq i \leq k$. This is our inductive hypothesis. We now need to show that $P(k+1)$ is true; that is, $g_{k+1} = 2^{k+1} +1$. Now, since $k \geq 2$, $k+1 \geq 3$. So, we can now write the original sequence as $g_{k+1} = 3g_{k} - 2g_{k-1}$. Then, from the inductive hypothesis, we can plug in values for $g_{k}$ and $g_{k-1}$ to get $g_{k+1} = 3(2^{k}+1) - 2(2^{k-1}+1)$. Now, we can multiply through to get $g_{k+1} = 3\cdot2^{k}+3 - 2\cdot2^{k-1}-2$ and then by the laws of exponents we can rewrite this as $g_{k+1} = 3\cdot2^{k} - 2^{k}+1$. Then, we can reduce this to $g_{k+1} = 2\cdot2^{k}+1$, which again by the laws of exponents we can write as $g_{k+1} = 2^{k+1}+1$. Since this is what was to be shown, we know that the formula for the $n^{th}$ term of the sequence, $g_{n} = 2^{n} +1$, must be true through strong mathematical induction. Q.E.D.
+
+\subsection*{Problem 8a}
+
+PROOF: We are given the definition of the sequence as $h_{0}=1$, $h_{1}=2$, $h_{2}=3$, and $h_{k}=h_{k-1} + h_{k-2} + h_{k-3}$ for $\forall k \in \mathbb{Z}$, $k \geq 3$. We need to prove that the inequality $h_{n} \leq 3^{n}$ for $\forall n \in \mathbb{Z}$, $n \geq 0$ holds for the $n^{th}$ term of the sequence. We'll refer to the inequality $h_{n} \leq 3^{n}$ as $P(n)$. First, we must show that the base cases $P(0)$, $P(1)$, and $P(2)$ are true. So, for the case $n=0$, $h_{0} \leq 3^{0} \leq 1$, which is true since $h_{0}=1$. For $n=1$, $h_{1} \leq 3^{1} \leq 3$ is also true since $h_{1}=2$. Finally, for $n=2$, $h_{2} \leq 3^{2} \leq 9$ is true since $h_{2}=3$. Now, let $k$ be any integer with $k \geq 3$ and suppose that $h_{i} \leq 3^{i}$ for $\forall i \in \mathbb{Z}$, with $3 \leq i < k$. This is our inductive hypothesis. Now, we must show that $P(k)$ is true; that is, $h_{k} \leq 3^{k}$. Since this is an inequality, proving the case for $n=k$ is sufficient to show $h_{n} \leq 3^{n}$. So, since $h_{k}$ is given by $h_{k}=h_{k-1} + h_{k-2} + h_{k-3}$, we can use the inductive hypothesis to see that $h_{k-1} \leq 3^{k-1}$, $h_{k-2} \leq 3^{k-2}$, and $h_{k-3} \leq 3^{k-3}$. We know that $k-1$, $k-2$, and $k-3$ are all $< k$ and $\geq 3$, so they are valid to use. Then, since $h_{k}=h_{k-1} + h_{k-2} + h_{k-3}$, we know that $h_{k} \leq 3^{k-1} + 3^{k-2} + 3^{k-3}$. Now, we can use algebra to rearrange the exponents to get $3^{k-1} + 3^{k-2} + 3^{k-3} = 3^{k-3+2} + 3^{k-3+1} + 3^{k-3}$. Then, we can factor out a $3^{k-3}$ term to get $3^{k-3}(3^{2}+3+1)$. We can see that this expression becomes $3^{k-3}\cdot13$. Then, we know that $13<3^{3}$, so we know that  $3^{k-3}\cdot13 < 3^{k-3}\cdot3^{3}$, and therefore $3^{k-3}\cdot13 < 3^{k}$ by the properties of exponents. Therefore, since $h_{k} = 3^{k-3}\cdot13$, we can conclude that $h_{k} < 3^{k}$. Therefore, the property is true for $n=k$ and is thus true for $\forall n \in \mathbb{Z}$, $n \geq 0$. Since this is what was to be shown, we know that the inequality $h_{n} \leq 3^{n}$ for $\forall n \in \mathbb{Z}$, $n \geq 0$ holds for the $n^{th}$ term of the sequence through strong mathematical induction. Q.E.D.
+
+\subsection*{Problem 29cf}
+
+(c) The given number in binary is $110110_{2}$. We know that each column represents an ascending power of 2; i.e. the first column is $2^0$, the second column is $2^1$, the third column is $2^2$, the fourth column is $2^3$, the fifth column is $2^4$, and the sixth column is $2^5$, going from right to left. Then, we can expand this since we are given the values of each column: $110110_{2} = 1 \cdot 2^{5} +1 \cdot 2^{4} + 0 \cdot 2^{3} + 1 \cdot 2^{2} + 1 \cdot 2^{1} + 0 \cdot 2^{0}$. In decimal, this is: $32+16+0+4+2+0 = 54$.\vspace{5mm} \hfill \break (f) The given number in binary is $1011011_{2}$. We can expand this since we are given the values of each column: $1011011_{2} = 1 \cdot 2^{6} 0 \cdot 2^{5} +1 \cdot 2^{4} + 1 \cdot 2^{3} + 0 \cdot 2^{2} + 1 \cdot 2^{1} + 1 \cdot 2^{0}$. In decimal, this is: $64+0+16+8+0+2+1 = 91$.
+
+
+
+
+
+
+\end{document}
