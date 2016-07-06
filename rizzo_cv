@@ -1,0 +1,73 @@
+\documentclass[margin]{res} 
+\textwidth=5.2in 
+
+\begin{document} 
+ 
+\name{Anthony J. Rizzo\\[12pt]} 
+\address{{\bf Present Address} \\ 370 Lancaster Avenue \\ Haverford, PA 19041  \\
+        (315) 368-4260 }
+\address{{\bf Permanent Address} \\ 7224 Reservoir Road \\ Clinton, NY 13323 \\
+        (315) 853-8970 }
+
+ 
+\begin{resume} 
+  
+
+\section{Education} 
+{\bf B.S. in Physics,} Haverford College, Haverford, PA \hfill Anticipated May 2017 \\
+Concentration in Computer Science \\
+GPA: 3.75 in Major, 4.0 in Concentration, 3.59 Overall
+ 
+
+\section{Professional \\ Experience}
+ {\bf Intern,} US Air Force Research Laboratory, Rome, NY \hfill Summer 2015 \& 2016
+ \begin{itemize} \itemsep -2pt  
+ \item Research Intern with Quantum Computing Team
+ \item Investigated entanglement in relation to quantum computation using nonlinear optical phenomena such as spontaneous parametric down conversion and four-wave mixing 
+ \item Worked in collaboration with the Quantum Photonics Laboratory at MIT on researching quantum properties of photons in silicon nanophotonic circuits
+ \end{itemize}
+ 
+{\bf Tutor,} Haverford College, Haverford, PA \hfill Spring \& Fall 2016
+\begin{itemize} \itemsep -2pt
+ \item Employed by the Office of Academic Resources to tutor in Computer Science, Physics, and Economics
+\end{itemize}
+ 
+{\bf Teaching Assistant,} Haverford College, Haverford, PA \hfill  Fall 2015
+\begin{itemize} \itemsep -2pt %reduce space between items
+\item TA for Astronomy 101, an introduction to astronomy and astrophysics for non-majors
+\item Held office hours twice per week to help students with problem
+	sets and conceptual understanding
+\end{itemize}
+
+{\bf Physics Clinic Tutor,} Haverford College, Haverford, PA \hfill Fall 2014                
+\begin{itemize} \itemsep -2pt
+ \item  Helped students in introductory mechanics with problem sets
+ \item Taught students useful problem solving tools for approaching problems in physics
+\end{itemize}
+
+
+\section{Skills}
+   \begin{tabular}{l p{3in}}
+    \underline{Languages and Software:} & Python, Git, Mathematica, AutoCAD, Arduino, LabView, C, Vim, \LaTeX \\
+\\
+     \underline{Laboratory:} &  Tabletop Optics, Lasers, Photon Detectors, 
+     					     Quantum Optics, Fiber Optics and Splicing, Circuits, Amplifiers, Advanced Electronics
+					     
+ \end{tabular}
+ 
+\section{Interests, \\ Activities, \\ and Awards} 
+Varsity Baseball at Haverford College \\
+Haverford College Physics Professor Search Committee, Student Representative \\
+Haverford College Versal Scholarship Recipient 
+ 
+\section{Relevant \\ Coursework}
+  \begin{tabular}{l p{3in}}
+   \underline{Physics:} & Statistical Physics, Advanced Quantum Mechanics, Advanced Laboratory, Advanced Electromagnetism, Solid State Physics, Classical Mechanics \\
+\\
+   \underline{Mathematics and Computer Science:} &  Discrete Mathematics, Linear Algebra, Computational Astrophysics, Multivariable Calculus, Electronics Laboratory
+					     
+ \end{tabular}
+
+ 
+\end{resume} 
+\end{document} 
