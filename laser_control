@@ -48,4 +48,128 @@ while True:
 s.close()
 
 
+# Below is the changes for an interactive iPython notebook with GUI. All the same ideas apply.
+
+import socket, sys #main library for telnet communication
+from IPython.html.widgets import interact, interactive, fixed
+from IPython.html import widgets
+from IPython.display import clear_output, display, HTML
+
+TCP_IP = '169.254.158.210' #can be set on laser
+TCP_PORT = 23 #default telnet port
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #standard for socket programming
+s.settimeout(1)
+
+try:
+    s.connect((TCP_IP, TCP_PORT))
+except:
+    print('Unable to connect')
+    sys.exit()
+    
+print('Connected to remote host')
+
+   
+data = s.recv(8192).decode()
+print(data)
+data2 = s.recv(8192).decode()
+print(data2)
+
+
+
+def start_wavelength(x):
+    mes = ':config:sweep:start Continuous ' + str(x) + '\r\n'
+    s.send(mes.encode('utf-8'))
+
+
+
+
+def end_wavelength(y):
+    mes = ':config:sweep:stop Continuous ' + str(y) + '\r\n'
+    s.send(mes.encode('utf-8'))
+
+
+
+
+def sweep_rate(z):
+    mes = ':config:sweep:rate ' + str(z) + '\r\n'
+    s.send(mes.encode('utf-8'))
+
+
+
+def number_of_sweeps(a):
+    mes = ':config:sweep:count ' + str(a) + '\r\n'
+    s.send(mes.encode('utf-8'))
+
+
+
+def begin_sweep(b):
+    mes = ':initiate ' + '\r\n'
+    s.send(mes.encode('utf-8'))
+
+
+
+
+def abort_sweep(c):
+    mes = ':abort ' +'\r\n'
+    s.send(mes.encode('utf-8'))
+
+
+
+
+interact(start_wavelength, x=(1510,1619,0.001));
+
+
+
+interact(end_wavelength, y=(1511,1620,0.001));
+
+
+
+
+interact(sweep_rate, z = (2,2000,0.1));
+
+
+
+
+interact(number_of_sweeps, a = (0,2500,1));
+#note that 0 is infinite number of sweeps
+
+
+button = widgets.Button(description="Begin Sweep")
+display(button)
+
+button.on_click(begin_sweep)
+
+
+button = widgets.Button(description="Abort Sweep")
+display(button)
+button.on_click(abort_sweep)
+
+
+while True:
+   
+    msg = input('')
+    msg = msg +'\r\n'
+    if msg == 'exit()\r\n':
+        break
+    s.send(msg.encode('utf-8'))
+      
+    try:   
+        while True:
+            try:        
+                rsp = s.recv(8192).decode()
+            except socket.timeout:
+                break
+            else:
+                print(rsp)
+                
+    except:
+        pass
+        
+s.close()
+
+
+
+
+
    
