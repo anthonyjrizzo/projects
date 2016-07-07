@@ -1,0 +1,52 @@
+import socket, sys #main library for telnet communication
+
+
+
+TCP_IP = '169.254.158.210' #can be set on laser
+TCP_PORT = 23 #default telnet port
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #standard for socket programming
+s.settimeout(1)
+
+try:
+    s.connect((TCP_IP, TCP_PORT))
+except:
+    print('Unable to connect')
+    sys.exit()
+    
+print('Connected to remote host')
+
+
+    
+data = s.recv(8192).decode()
+print(data)
+data2 = s.recv(8192).decode()
+print(data2)
+
+
+msg = input('')
+msg = msg +'\r\n'
+s.send(msg.encode('utf-8'))
+
+
+
+try:   
+    while True:
+        try:        
+            rsp = s.recv(8192).decode()
+        except socket.timeout:
+            break
+        else:
+            print(rsp)
+            
+except:
+    pass
+    
+msg2 = input('')
+msg2 = msg2 + '\r\n'
+s.send(msg2.encode('utf-8'))
+rsp1 = s.recv(8192).decode()
+print(rsp1)
+#if msg == 'exit\r\n':
+
+   
