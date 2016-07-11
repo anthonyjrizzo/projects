@@ -1,5 +1,9 @@
-import socket, sys #main library for telnet communication
+#created by Anthony Rizzo, Summer 2016
+#intern at United States Air Force Research Laboratory, Rome, NY
 
+import socket, sys
+from tkinter import *
+from tkinter import messagebox
 
 
 TCP_IP = '169.254.158.210' #can be set on laser
@@ -8,168 +12,250 @@ TCP_PORT = 23 #default telnet port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #standard for socket programming
 s.settimeout(1)
 
-try:
-    s.connect((TCP_IP, TCP_PORT))
-except:
-    print('Unable to connect')
-    sys.exit()
+#try:
+#    s.connect((TCP_IP, TCP_PORT))
+#except:
+#    T1.insert(END,"Could not connect")
     
-print('Connected to remote host')
+laser_off = True
+
+root = Tk()
+root.wm_title("New Focus Venturi Controller")
+root.geometry('{}x{}'.format(850,300))
+
+defaultbg = root.cget('bg')
 
 
-    
-data = s.recv(8192).decode()
-print(data)
-data2 = s.recv(8192).decode()
-print(data2)
+def set_ip(): 
+    ip = str(T3.get("1.0",END))
+    try:
+        s.connect((ip,TCP_PORT))
+        T1.insert(END, "Connected to network. \r\n")
+        data = s.recv(8192).decode() + '\n'
+        T1.insert(END, data)
+        data2 = s.recv(8192).decode() + '\n'
+        T1.insert(END, data2)
 
-while True:
-   
-    msg = input('')
-    msg = msg +'\r\n'
-    if msg == 'exit()\r\n':
-        break
-    s.send(msg.encode('utf-8'))
-      
-    try:   
-        while True:
-            try:        
-                rsp = s.recv(8192).decode()
-            except socket.timeout:
-                break
-            else:
-                print(rsp)
-                
     except:
-        pass
-        
-   
-    
-s.close()
+        T1.insert(END,"Could not connect")
 
-
-# Below is the changes for an interactive iPython notebook with GUI. All the same ideas apply.
-
-import socket, sys #main library for telnet communication
-from IPython.html.widgets import interact, interactive, fixed
-from IPython.html import widgets
-from IPython.display import clear_output, display, HTML
-
-TCP_IP = '169.254.158.210' #can be set on laser
-TCP_PORT = 23 #default telnet port
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #standard for socket programming
-s.settimeout(1)
-
-try:
-    s.connect((TCP_IP, TCP_PORT))
-except:
-    print('Unable to connect')
-    sys.exit()
-    
-print('Connected to remote host')
-
-   
-data = s.recv(8192).decode()
-print(data)
-data2 = s.recv(8192).decode()
-print(data2)
-
-
-
-def start_wavelength(x):
-    mes = ':config:sweep:start Continuous ' + str(x) + '\r\n'
+def start_wavelength():
+    mes = ':config:sweep:start Continuous ' + E1.get() + '\r\n'
     s.send(mes.encode('utf-8'))
-
-
-
-
-def end_wavelength(y):
-    mes = ':config:sweep:stop Continuous ' + str(y) + '\r\n'
+	
+def end_wavelength():
+    mes = ':config:sweep:stop Continuous ' + E2.get() + '\r\n'
     s.send(mes.encode('utf-8'))
-
-
-
-
-def sweep_rate(z):
-    mes = ':config:sweep:rate ' + str(z) + '\r\n'
+	
+def sweep_rate():
+    mes = ':config:sweep:rate ' + E4.get() + '\r\n'
     s.send(mes.encode('utf-8'))
-
-
-
-def number_of_sweeps(a):
-    mes = ':config:sweep:count ' + str(a) + '\r\n'
+	
+def number_of_sweeps():
+    mes = ':config:sweep:count ' + E3.get() + '\r\n'
     s.send(mes.encode('utf-8'))
+	
+def enable_laser():
+	mes = ':config:tls:output on ' + '\r\n'
+	s.send(mes.encode('utf-8'))
+	BT.config(relief=SUNKEN, background='green')
+	BO.config(relief=RAISED, background=defaultbg)
 
+def disable_laser():
+	mes = ':config:tls:output off ' + '\r\n'
+	s.send(mes.encode('utf-8'))	
+	BO.config(relief=SUNKEN,background='red')
+	BT.config(relief=RAISED,background=defaultbg)
+	
+def db_set():
+	mes = ':config:tls:units dbm ' + '\r\n'
+	s.send(mes.encode('utf-8'))
+	mes1 = ':config:tls:power ' + E5.get() + '\r\n'
+	s.send(mes1.encode('utf-8'))
+	
+def mw_set():
+	mes = ':config:tls:units mw ' + '\r\n'
+	s.send(mes.encode('utf-8'))
+	mes1 = ':config:tls:power ' + E5.get() + '\r\n'
+	s.send(mes1.encode('utf-8'))
+	
+def set_wavelength():
+	mes = ':config:tls:wavelen ' + E6.get() + '\r\n'
+	s.send(mes.encode('utf-8'))
+	
+def sweep_mode():
+    mes = ':config:sweep:mode continuous ' + '\r\n'
+    s.send(mes.encode('utf-8'))
+    B_sweep.config(relief=SUNKEN)
+    B_fixed.config(relief=RAISED)
+    BT.config(relief=RAISED,bg=defaultbg)
+    BO.config(relief=RAISED,bg=defaultbg)
+	
+def fixed_mode():
+    mes = ':config:sweep:mode time ' + '\r\n'
+    s.send(mes.encode('utf-8'))
+    B_fixed.config(relief=SUNKEN)
+    B_sweep.config(relief=RAISED)
+    B.config(relief=RAISED,bg=defaultbg)
+    C.config(relief=RAISED,bg=defaultbg)
 
-
-def begin_sweep(b):
+def begin_sweep():
     mes = ':initiate ' + '\r\n'
     s.send(mes.encode('utf-8'))
-
-
-
-
-def abort_sweep(c):
-    mes = ':abort ' +'\r\n'
+    B.config(relief=SUNKEN, background='green')
+    C.config(relief=RAISED, background=defaultbg)
+    
+def abort_sweep():
+    mes = ':abort ' + '\r\n'
     s.send(mes.encode('utf-8'))
+    C.config(relief=SUNKEN, background='red')
+    B.config(relief=RAISED, background=defaultbg)
+
+	
+	
+mbutton = Menubutton(root,text="Units")
+picks = Menu(mbutton)
+mbutton.config(menu=picks)
+picks.add_command(label="dBm", command=db_set)
+picks.add_command(label="mW", command=mw_set)
+mbutton.pack()
+mbutton.config(bd=4, relief=RAISED)
+mbutton.place(x=790,y=47)
+
+	
+
+LS = Label(root, font =(16), text="Sweep Configuration")
+LS.pack()
+LS.place(x=5,y=0)
+
+LT = Label(root, font=(16), text="TLS Settings")
+LT.pack()
+LT.place(x=675,y=0)
+
+L1 = Label(root, text="Start Wavelength (nm):")
+L1.pack()
+L1.place(x=5,y=30)
+E1 = Spinbox(root, from_=1510.0, to=1619.0)
+E1.pack()
+E1.place(x=5,y=55)
+B1 = Button(root,text="Set", command = start_wavelength)
+B1.pack()
+B1.place(x=150,y=51)
+
+L2 = Label(root, text="End Wavelength (nm):")
+L2.pack()
+L2.place(x=5,y=80)
+E2 = Spinbox(root, from_=1511.0, to=1620.0)
+E2.pack()
+E2.place(x=5,y=105)
+B2 = Button(root, text="Set", command= end_wavelength)
+B2.pack()
+B2.place(x=150,y=101)
+
+L3 = Label(root, text="Number of Sweeps:")
+L3.pack()
+L3.place(x=5,y=130)
+E3 = Spinbox(root, from_=0, to=2500)
+E3.pack()
+E3.place(x=5,y=155)
+B3 = Button(root,text="Set", command = number_of_sweeps)
+B3.pack()
+B3.place(x=150, y=151)
+
+L4 = Label(root, text="Sweep Rate (nm/s):")
+L4.pack()
+L4.place(x=5,y=180)
+E4 = Spinbox(root, from_=2.0, to=2000.0)
+E4.pack()
+E4.place(x=5,y=205)
+B4 = Button(root,text="Set", command= sweep_rate)
+B4.pack()
+B4.place(x=150,y=201)
+
+L5 = Label(root, text="Set Power (dBm or mW):")
+L5.pack()
+L5.place(x=650,y=30)   
+E5 = Spinbox(root,from_=-25.00, to=2.00)
+E5.pack()
+E5.place(x=650,y=55)   
+
+L6 = Label(root, text="Set Wavelength (nm):")
+L6.pack()
+L6.place(x=650,y=90)    
+E6 = Spinbox(root,from_=1510.00, to=1620.00)
+E6.pack()
+E6.place(x=650,y=120)
+B6 = Button(root,text="Set", command= set_wavelength)
+B6.pack()
+B6.place(x=800,y=115)
+
+L7 = Label(root, text="Set IP Address:")
+L7.pack()
+L7.place(x=650,y=160)
+B7 = Button(root,text="Set", command= set_ip)
+B7.pack()
+B7.place(x=800,y=190)
+
+B = Button(root, text ="Begin Sweep", command = begin_sweep)
+B.pack()
+B.place(x=5,y=255)
+
+C = Button(root, text ="Abort Sweep", command = abort_sweep)
+C.pack()
+C.place(x=100,y=255)
+
+BT = Button(root, text="Enable Output", command=enable_laser)
+BT.pack()
+BT.place(x=650,y=255)
+
+BO = Button(root, text="Disable Output", command=disable_laser)
+BO.pack()
+BO.place(x=750,y=255)
+
+B_sweep = Button(root, text="Continuous Sweep Mode", command=sweep_mode)
+B_sweep.pack()
+B_sweep.place(x=250,y=255)
+
+B_fixed = Button(root, text="Fixed Wavelength Mode", command=fixed_mode)
+B_fixed.pack()
+B_fixed.place(x=420,y=255)
+
+T1=Text(root,height=10,width=50)
+scroll = Scrollbar(root,command=T1.yview)
+T1.configure(yscrollcommand=scroll.set)
+scroll.pack()
+scroll.place(x=604,y=25,height=163)
+T1.pack()
+T1.place(x=200,y=25)
+
+T2=Text(root,height=1,width=45)
+T2.pack()
+T2.place(x=200,y=200)
+
+T3 = Text(root,height=1,width=15)
+T3.pack()
+T3.place(x=650,y=190)
+T3.insert(END,"169.254.158.210")
+
+def get_text():
+	mes = T2.get("1.0",END) + '\r\n'
+	s.send(mes.encode('utf-8'))
+	while True:
+		try:        
+			rsp = s.recv(8192).decode()
+		except socket.timeout:
+			break
+		else:
+			T1.insert(END,rsp)
+	
+TB = Button(root, text="Enter", command = get_text)
+TB.pack()
+TB.place(x=568,y=197)
 
 
 
 
-interact(start_wavelength, x=(1510,1619,0.001));
 
-
-
-interact(end_wavelength, y=(1511,1620,0.001));
-
-
-
-
-interact(sweep_rate, z = (2,2000,0.1));
-
-
-
-
-interact(number_of_sweeps, a = (0,2500,1));
-#note that 0 is infinite number of sweeps
-
-
-button = widgets.Button(description="Begin Sweep")
-display(button)
-
-button.on_click(begin_sweep)
-
-
-button = widgets.Button(description="Abort Sweep")
-display(button)
-button.on_click(abort_sweep)
-
-
-while True:
-   
-    msg = input('')
-    msg = msg +'\r\n'
-    if msg == 'exit()\r\n':
-        break
-    s.send(msg.encode('utf-8'))
-      
-    try:   
-        while True:
-            try:        
-                rsp = s.recv(8192).decode()
-            except socket.timeout:
-                break
-            else:
-                print(rsp)
-                
-    except:
-        pass
-        
-s.close()
-
-
-
-
+root.mainloop()
 
    
