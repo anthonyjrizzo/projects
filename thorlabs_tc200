@@ -1,0 +1,47 @@
+import serial
+import time
+import matplotlib.pyplot as plt
+
+#all the connection stuff from the serial library
+
+ser = serial.Serial(port='\\.\COM1', baudrate=115200, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=1)
+dat = bytes("tact?\r", 'utf-8') #the string to send
+
+
+times = []
+tot = []
+
+timeout1 = time.time() + 60*60 #timeout for the big loop. number is loop time in seconds, i.e. 60*60 is an hour
+
+time1 = time.time()
+
+while True:
+    ser.write(dat) #writes the data to the serial port
+    timeout = time.time() + 1
+    temp = []
+    while True:
+        ret = ser.read().decode('utf-8') #reads whats in the buffer
+        temp.append(ret) #puts the data in a temporary list
+    
+        if time.time() > timeout:
+            break #breaks after one second since this is how long it takes to clear all data in the buffer
+            
+      
+
+    tot.append(float(temp[7]+temp[8]+temp[9]+temp[10])) #needs some strange indexing because the controller sends information in a stupid way
+    times.append(time.time()-time1) #needs the time delta for our x-axis
+    time.sleep(10) #waits x amount of time before looping again. In this case, 10 seconds
+    
+    if time.time() > timeout1:
+        break
+    
+    
+print(tot)
+
+#a quick plot to show how the temperature varies in time. Parameters are straight forward
+
+plt.plot(times,tot, 'ro')
+plt.ylabel('Temperature (Celsius)')
+plt.xlabel('Time (Seconds)')
+plt.axis([0,3600,35,40])
+plt.show()
