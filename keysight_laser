@@ -1,0 +1,289 @@
+#program to control the Keysight 8164B laser with interactive GUI
+#created by Anthony Rizzo, Summer 2016
+#intern at United States Air Force Research Laboratory, Rome, NY
+#contact: arizzo@haverford.edu
+
+#note: laser must be unlocked from the front panel first!
+
+import socket, sys
+from tkinter import *
+from tkinter import messagebox
+from tkinter import ttk
+import time
+import matplotlib.pyplot as plt
+
+root = Tk()
+root.wm_title("Keysight 8164B Controller")
+root.geometry('{}x{}'.format(700,300))
+defaultbg = root.cget('bg')
+
+power = False
+
+t1 = time.time() + 2
+powers = []
+times = []
+
+TCP_PORT = 5025 #MUST be set on this port, standard for Keysight instruments
+IP_ADDRESS = '169.254.158.210'
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #standard for socket programming
+s.settimeout(1) #necessary for timeout errors
+
+def set_ip():   #this sets the ip address specified by the user
+    ip = str(T1.get("1.0",END))
+    try:
+        s.close()
+        s.connect((ip,TCP_PORT))
+        T3.insert(END, "Connected to Keysight 8164B.\n")
+        B2.config(relief=SUNKEN, background='green')
+        time.sleep(1)
+    except:
+        T3.insert(END,"Could not connect")
+
+def about():
+    messagebox.showinfo("About","Created by Anthony Rizzo, intern for the summer of 2016. Please see the Contact tab if any problems arise.")
+        
+def save():
+    messagebox.showinfo("Save", "Feature coming soon!")
+        
+def contact():
+    messagebox.showinfo("Contact Information", "Please email Anthony at arizzo@haverford.edu.")
+        
+def get_text(): #this function runs the interactive text window in the program
+    mes = T2.get("1.0",END) + '\r\n' #user message from text box
+    s.send(mes.encode('utf-8'))
+    T2.delete("1.0", END)
+    while True: #constantly looking for new data in the buffer
+        try:        
+            rsp = s.recv(8192)
+        except socket.timeout:
+            break
+        else:
+            T3.insert(END,rsp)
+                
+
+def current_ip():
+    mes = ":syst:comm:eth:ipad?\r\n"
+    s.send(mes.encode('utf-8'))
+    response = s.recv(8192).decode()
+    T3.insert(END,response)
+        
+def get_mac():
+    mes = ":syst:comm:eth:mac?\r\n"
+    s.send(mes.encode('utf-8'))
+    response = s.recv(8192).decode()
+    T3.insert(END,response)
+        
+def get_host():
+    mes = ":syst:comm:eth:host?\r\n"
+    s.send(mes.encode('utf-8'))
+    response = s.recv(8192).decode()
+    T3.insert(END,response)
+        
+def get_domain():
+    mes = ":syst:comm:eth:dom?\r\n"
+    s.send(mes.encode('utf-8'))
+    response = s.recv(8192).decode()
+    T3.insert(END,response)
+        
+def get_mask():
+    mes = ":syst:comm:eth:smas?\r\n"
+    s.send(mes.encode('utf-8'))
+    response = s.recv(8192).decode()
+    T3.insert(END,response)
+        
+def get_gate():
+    mes = ":syst:comm:eth:dgat?\r\n"
+    s.send(mes.encode('utf-8'))
+    response = s.recv(8192).decode()
+    T3.insert(END,response)
+        
+def restart_network():
+    mes = ":syst:comm:eth:rest\r\n"
+    s.send(mes.encode('utf-8'))
+    B2.config(relief=RAISED, bg = defaultbg)
+        
+def lock_laser():
+    mes = ":lock 1, 1234\r\n"
+    s.send(mes.encode('utf-8'))
+    B11.config(relief=RAISED,bg=defaultbg)
+    B10.config(relief=SUNKEN,bg='red')
+        
+def unlock_laser():
+    mes = ":lock 0, 1234\r\n"
+    s.send(mes.encode('utf-8'))
+    B10.config(relief=RAISED,bg=defaultbg)
+    B11.config(relief=SUNKEN,bg='green')
+    
+def enable_output():
+    mes = ":outp 1\r\n"
+    s.send(mes.encode('utf-8'))
+    B12.config(relief=SUNKEN,bg='green')
+    B13.config(relief=RAISED,bg=defaultbg)
+    
+def disable_output():
+    mes = ":outp 0\r\n"
+    s.send(mes.encode('utf-8'))
+    B13.config(relief=SUNKEN,bg='red')
+    B12.config(relief=RAISED,bg=defaultbg)
+    
+    
+def get_power():
+    T4.delete("1.0", END)
+    mes = ":read1:chan1:pow?\r\n"
+    s.send(mes.encode('utf-8'))
+    response = s.recv(8192).decode()
+    response = float(response)
+    powers.append(response)
+    times.append(time.time()-t1)
+    response = str(response)
+    T4.insert(END,response)
+    plt.plot(times,powers,'r')
+    plt.ylabel('Power (W)')
+    plt.xlabel('Time (s)')
+    plt.draw()
+    plt.show(block=False)
+    root.after(250,get_power)
+    
+def reboot():
+    mes = ":spec:reb\r\n"
+    s.send(mes.encode('utf-8'))
+
+ 
+n = ttk.Notebook(root)
+f1 = ttk.Frame(n, height = 300, width = 700)
+f2 = ttk.Frame(n)
+f3 = ttk.Frame(n)
+f5 = ttk.Frame(n)
+n.add(f1, text='Network Settings & User Command Line')
+n.add(f2, text='Channel 0 Laser')
+n.add(f3, text='Channel 1 Power Meter')
+n.add(f5, text='Measurement Center')
+n.pack()
+
+
+menubar = Menu(root)
+filemenu = Menu(menubar, tearoff=0)
+filemenu.add_command(label="About", command = about)
+filemenu.add_command(label="Save", command = save)
+filemenu.add_command(label="Reboot Module", command = reboot)
+
+
+filemenu.add_separator()
+filemenu.add_command(label="Exit", command = root.quit)
+menubar.add_cascade(label="File", menu=filemenu)
+
+helpmenu = Menu(menubar, tearoff=0)
+helpmenu.add_command(label="Contact", command = contact)
+menubar.add_cascade(label="Help", menu=helpmenu)
+
+
+L1 = Label(f1,font =(10), text="Set IP Address:")
+L1.pack()
+L1.place(x=10,y=5)
+
+T1 = Text(f1,height=1,width=15)
+T1.pack()
+T1.place(x=10,y=30)
+T1.insert(END,"169.254.158.210")
+
+T2=Text(f1,height=1,width=45)
+T2.pack()
+T2.place(x=200,y=200)
+
+T3=Text(f1,height=10,width=50)
+scroll = Scrollbar(f1,command=T1.yview)
+T3.configure(yscrollcommand=scroll.set)
+scroll.pack()
+scroll.place(x=604,y=25,height=163)
+T3.pack()
+T3.place(x=200,y=25)
+
+s.connect((IP_ADDRESS,TCP_PORT))
+T3.insert(END, "Connected to Keysight 8164B.\n")
+
+B1 = Button(f1, text = "Send", command = get_text)
+B1.pack()
+B1.place(x=566,y=198, width=55, height = 21)
+
+B2 = Button(f1, text = "Set", command = set_ip)
+B2.pack()
+B2.place(x=135,y=29, height = 21)
+
+
+B3 = Button(f1, text = "Get IP Address", command = current_ip)
+B3.pack()
+B3.place(x=10,y=60, width=150)
+
+B4 = Button(f1, text = "Get MAC Address", command = get_mac)
+B4.pack()
+B4.place(x=10,y=90, width=150)
+
+B5 = Button(f1, text = "Get Host Name", command = get_host)
+B5.pack()
+B5.place(x=10,y=120, width=150)
+
+B6 = Button(f1, text = "Get Domain Name", command = get_domain)
+B6.pack()
+B6.place(x=10,y=150, width=150)
+
+B7 = Button(f1, text = "Get Subnet Mask", command = get_mask)
+B7.pack()
+B7.place(x=10,y=180, width=150)
+
+B8 = Button(f1, text = "Get Default Gateway", command = get_gate)
+B8.pack()
+B8.place(x=10,y=210, width=150)
+
+B9 = Button(f1, text = "Restart Network", command = restart_network)
+B9.config(bg='red')
+B9.pack()
+B9.place(x=10,y=240, width=150)
+
+L2 = Label(f1, font = "Helvetica 8", text="Note: It is not recommended for the user to change the settings for \n the host name, domain name, subnet mask, or default gateway. \n These features can be manually entered in the command line if necessary.")
+L2.pack()
+L2.place(x=200,y=225)
+
+B10 = Button(f2, text = "Lock", command = lock_laser)
+B10.pack()
+B10.place(x=5,y=30, width=50)
+
+B11 = Button(f2, text = "Unlock", command = unlock_laser)
+B11.config(relief=SUNKEN,bg='green')
+B11.pack()
+B11.place(x=55, y=30, width=50)
+
+L3 = Label(f2, font = "Helvetica 12", text="Lock Toggle")
+L3.pack()
+L3.place(x=10,y=5)
+
+B12 = Button(f2, text = "Enable Output", command = enable_output, width=50)
+B12.pack()
+B12.place(x=150, y=30)
+
+B13 = Button(f2, text = "Disable Output", command = disable_output, width=50)
+B13.pack()
+B13.place(x=150, y=55)
+
+L4 = Label(f2, font = "Helvetica 12", text = "Output Toggle")
+L4.pack()
+L4.place(y=5, x=275)
+
+#power meter stuff
+
+T4 = Text(f3,height=1,width=12, font="Helvetica 36", bg=defaultbg, relief = FLAT, insertontime = 0)
+T4.pack()
+T4.place(x=150,y=100)
+
+L5 = Label(f3, font = "Helvetica 36", text = "W")
+L5.pack()
+L5.place(x=475,y=100)
+
+L6 = Label(f3, text = "Current Power Value:", font = "Times 20")
+L6.pack()
+L6.place(x=225,y=25)
+
+
+root.config(menu=menubar)
+root.after(2000, get_power)
+root.mainloop()
